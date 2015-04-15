@@ -19,6 +19,16 @@
  *
  */
 
+/**
+ * @note Voltronic inverters are "Solar Controller Devices".
+ *
+ * for further explanations about the implementation see:
+ * http://www.networkupstools.org/docs/developer-guide.chunked/ar01s04.html#nutdrv_qx-subdrivers
+ *
+ * Variable name sheme:
+ * http://www.networkupstools.org/docs/developer-guide.chunked/apa.html
+ */
+
 #include "main.h"
 #include "nutdrv_qx.h"
 #include "nutdrv_qx_voltronic_inverter.h"
@@ -49,17 +59,21 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    0         1         2         3         4         5         6         7         8         9        10        11        12        13
 	 */
 	{ "input.voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	1,	5,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "outlet.1.power",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	32,	36,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, // 7-12 vs 32-36
-	{ "outlet.1.frequency",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	38,	41,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, // 14-17 vs 38-41
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	43,	47,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //UNKNOWN */
-	{ "outlet.1.level",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	49,	51,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	53,	57,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //UNKNOWN */
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	59,	63,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //UNKNOWN */
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
+	{ "outlet.realpower",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	32,	36,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, // 7-12 vs 32-36
+	{ "outlet.frequency",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	38,	41,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, // 14-17 vs 38-41
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	43,	47,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },*/
+	{ "outlet.power.percent",0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	49,	51,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	53,	57,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	59,	63,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
 	{ "battery.voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	65,	69,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "battery.capacity",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	77,	79,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "pv.power",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	81,	85,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	87,	91,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //UNKNOWN */
-	{ "pv.voltage",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	99,	103,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "battery.capacity.percent",0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	77,	79,	"%d",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT,	NULL,	NULL },
+	{ "generator_power",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	81,	85,	"%d",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT,	NULL,	NULL },
+	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	87,	91,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
+	{ "generator.voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	99,	103,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 	{ "ups.temperature",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	117,	121,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 
 	/* Ask for battery status information
@@ -70,9 +84,9 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    0         1         2
 	 */
 	{ "battery.charging.current",		0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	1,	4,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //CHECK AGAIN
-	{ "battery.charging.floating_voltage",	0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	6,	9,	"%.1f",	QX_FLAG_STATIC,	NULL,	NULL }, //CHECK AGAIN
-	{ "battery.charging.max_charge_current",0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	11,	14,	"%.1f",	QX_FLAG_STATIC,	NULL,	NULL }, //CHECK AGAIN
-	{ "battery.charging.bulk_voltage",	0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	16,	19,	"%.1f",	QX_FLAG_STATIC,	NULL,	NULL },
+	{ "battery.charging.floating_voltage",	0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	6,	9,	"%.1f",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL }, //CHECK AGAIN
+	{ "battery.charging.max_charge_current",0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	11,	14,	"%.1f",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL }, //CHECK AGAIN
+	{ "battery.charging.bulk_voltage",	0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	16,	19,	"%.1f",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL },
 
 	/* MAYBE allow battery to discharge when generator is unavailable
 	 * applies for infini inverters
@@ -125,8 +139,8 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    0123456789012345   6   7
 	 *    0         1
 	 */
-	{ "datetime.date",	0,	NULL,	"QT\r",	"",	135,	'(',	"",	1,	8,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "datetime.time",	0,	NULL,	"QT\r",	"",	135,	'(',	"",	9,	14,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "ups.date",	0,	NULL,	"QT\r",	"",	17,	'(',	"",	1,	8,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "ups.time",	0,	NULL,	"QT\r",	"",	17,	'(',	"",	9,	14,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 
 	/* End of structure. */
 	{ NULL,		0,	NULL,	NULL,	"",	0,	0,	"",	0,	0,	NULL,	0,	NULL,	NULL }
@@ -143,6 +157,7 @@ static testing_t	voltronic_inverter_testing[] = {
 
 int voltronic_inverter_claim(void)
 {
+	upslogx(LOG_INFO, "trying to claim an voltronic_inverter device");
 	/* UPS Protocol */
 	item_t *item = find_nut_info("ups.firmware.aux", 0, 0);
 	if (!item) {
@@ -152,7 +167,7 @@ int voltronic_inverter_claim(void)
 
 	/* No reply/Unable to get value */
 	if (qx_process(item, NULL) != 0) {
-		upslogx(LOG_ERR, "Unable to initially communicate with the target");
+		upslogx(LOG_ERR, "Unable to initially communicate with the target (Target asnwered: %s)", item->answer);
 		return RC_FAILED;
 	}
 
@@ -161,6 +176,7 @@ int voltronic_inverter_claim(void)
 		return RC_FAILED;
 	}
 
+	upslogx(LOG_INFO, "successfuly claimed voltronic inverter");
 	return RC_SUCCESSFUL;
 }
 

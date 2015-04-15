@@ -27,6 +27,10 @@
  */
 static int _validate_protocol_version(uint8_t protocol) {
 
+	upslogx(LOG_DEBUG, "validating protocol v%d", protocol);
+
+	if (protocol == 16)
+		return RC_PREPROC_SUCCESSFUL;
 	return RC_PREPROC_FAILED;
 }
 
@@ -43,6 +47,7 @@ int	voltronic_inverter_protocol(item_t *item, char *value, size_t valuelen)
 		upsdebugx(2, "%s: invalid start characters [%.2s]", __func__, item->value);
 		return RC_PREPROC_FAILED;
 	}
+	upslogx(LOG_DEBUG, "PI matched");
 
 	/* Exclude non numerical value and other non accepted protocols
 	 * (hence the restricted comparison target) */
@@ -56,8 +61,10 @@ int	voltronic_inverter_protocol(item_t *item, char *value, size_t valuelen)
 	protocol = strtol(item->value+identifierLen, NULL, 10);
 
 	rc = _validate_protocol_version(protocol);
-	if (rc != RC_PREPROC_SUCCESSFUL)
+	if (rc != RC_PREPROC_SUCCESSFUL) {
+		upslogx(LOG_DEBUG, "Failed to validate protocol version: %d", protocol);
 		return RC_PREPROC_FAILED;
+	}
 
 	snprintf(value, valuelen, "P%02d", protocol);
 
