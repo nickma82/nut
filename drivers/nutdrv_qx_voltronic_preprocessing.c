@@ -73,3 +73,139 @@ int	voltronic_inverter_protocol(item_t *item, char *value, size_t valuelen)
 
 	return RC_PREPROC_SUCCESSFUL;
 }
+
+int	voltronic_serial_numb(item_t *item, char *value, size_t valuelen)
+{
+	/* If the UPS report a 00..0 serial we'll log it but we won't store it in device.serial */
+	if (strspn(item->value, "0") == strlen(item->value)) {
+		upslogx(LOG_INFO, "%s: UPS reported a non-significant serial [%s]", item->info_type, item->value);
+		return RC_PREPROC_FAILED;
+	}
+
+	snprintf(value, valuelen, item->dfl, item->value);
+	return RC_PREPROC_SUCCESSFUL;
+}
+
+/* Working mode reported by the UPS */
+int	voltronic_inverter_mode(item_t *item, char *value, size_t valuelen)
+{
+	char	*status = NULL, *alarm = NULL;
+
+	switch (item->value[0])
+	{
+	case 'P':
+
+		alarm = "UPS is going ON";
+		break;
+
+	case 'S':
+
+		status = "OFF";
+		break;
+
+	case 'Y':
+
+		status = "BYPASS";
+		break;
+
+	case 'L':
+
+		status = "OL";
+		break;
+
+	case 'B':
+
+		status = "!OL";
+		break;
+
+	case 'T':
+
+		status = "CAL";
+		break;
+
+	case 'F':
+
+		alarm = "Fault reported by UPS.";
+		break;
+
+	case 'E':
+
+		alarm = "UPS is in ECO Mode.";
+		break;
+
+	case 'C':
+
+		alarm = "UPS is in Converter Mode.";
+		break;
+
+	case 'D':
+
+		alarm = "UPS is shutting down!";
+		status = "FSD";
+		break;
+
+	case 'G':
+		/* maybe state generating */
+		status = "OL";
+		break;
+
+	default:
+
+		upsdebugx(2, "%s: invalid reply from the UPS [%s]", __func__, item->value);
+		return RC_PREPROC_FAILED;
+
+	}
+
+	/* decision where to save the obtained value, because this method supports different
+	 * item->info_typs's */
+	if (alarm && !strcasecmp(item->info_type, "ups.alarm")) {
+
+		snprintf(value, valuelen, item->dfl, alarm);
+
+	} else if (status && !strcasecmp(item->info_type, "ups.status")) {
+
+		snprintf(value, valuelen, item->dfl, status);
+
+	}
+
+	return RC_PREPROC_SUCCESSFUL;
+}
+
+int	voltronic_inverter_sign(item_t *item, char *value, size_t valuelen) {
+	const size_t minimum_supported_length = 2;
+	const char staypositive_char = '0';
+
+	char* payload = item->value;
+	size_t leadin_zero_length = 0;
+	size_t payload_length = (strlen(payload) < valuelen) ? strlen(payload) : valuelen;
+
+	if (payload_length < minimum_supported_length) {
+		upsdebugx(LOG_ERR, "%s: length [%zu] insufficient (strlen(item->value):%zu, valuelen:%zu): %s",
+				__func__, payload_length, strlen(item->value), valuelen, item->value);
+		return RC_PREPROC_FAILED;
+	}
+
+	/* check item->value validity*/
+	if (strspn(payload, FILTER_FLOAT) != payload_length) {
+		upsdebugx(LOG_ERR, "%s: non numerical item->value [%s: %s]", __func__, item->info_type, payload);
+		return RC_PREPROC_FAILED;
+	}
+
+	/* process negative indicator */
+	if (*payload != staypositive_char) {
+		*(value++) = '-';
+		payload++;
+		payload_length--;
+	}
+
+	/* move to MSB position 0's, fill everything else with \0 */
+	leadin_zero_length = strspn(payload, "0");
+	if (leadin_zero_length) {
+		payload_length -= leadin_zero_length;
+
+		upsdebugx(LOG_DEBUG, "%s: item->value:%s", __func__, item->value);
+		snprintf(value, payload_length+1, "%s", payload+leadin_zero_length);
+	}
+
+	return RC_PREPROC_SUCCESSFUL;
+}

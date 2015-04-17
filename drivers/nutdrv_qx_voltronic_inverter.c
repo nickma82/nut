@@ -57,24 +57,29 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 * < [(225.9 000401 49.9 0001.8 226.4 00401 49.9 001.7 014 439.8 439.8 053.1 ---.- 079 01024 00300 ----- 203.1 ---.- ---.- 028.0 A---101001\x8b\x66\r]
 	 *    01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123   4   5
 	 *    0         1         2         3         4         5         6         7         8         9        10        11        12        13
+	 *     0     1      2    3      4     5     6    7     8   9     10    11    12    13  14    15    16    17    18    19    20    21
 	 */
-	{ "input.voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	1,	5,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	0,	0,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
-	{ "outlet.realpower",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	32,	36,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, // 7-12 vs 32-36
-	{ "outlet.frequency",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	38,	41,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, // 14-17 vs 38-41
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	43,	47,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },*/
-	{ "outlet.power.percent",0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	49,	51,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	53,	57,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	59,	63,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
-	{ "battery.voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	65,	69,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "battery.capacity.percent",0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	77,	79,	"%d",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT,	NULL,	NULL },
-	{ "generator_power",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	81,	85,	"%d",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT,	NULL,	NULL },
-	/*{ "unknown",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	87,	91,	"%d",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, */
-	{ "generator.voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	99,	103,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "ups.temperature",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	117,	121,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "input.voltage",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	1,	5,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "input.power",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	7,	12,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	voltronic_inverter_sign },
+	{ "input.frequency",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	14,	17,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "input.current",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	19,	24,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	voltronic_inverter_sign },
+	{ "output.voltage",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	26,	30,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "output.power", 		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	32,	36,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "output.frequency",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	38,	41,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "output.current",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	43,	47,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "output.power_percent",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	49,	51,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "pbus_voltage",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	53,	57,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "sbus_voltage",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	59,	63,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "battery.voltage",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	65,	69,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "battery.voltage_n",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	71,	75,	"%.1f",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT | QX_FLAG_SKIP,	NULL,	NULL },
+	{ "battery.charge",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	77,	79,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "generator_L1_power",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	81,	85,	"%s",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT,	NULL,	NULL },
+	{ "generator_L2_power",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	87,	91,	"%s",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT,	NULL,	NULL },
+	{ "generator_L3_power",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	93,	97,	"%s",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT |QX_FLAG_SKIP,	NULL,	NULL },
+	{ "generator_L1_voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	99,	103,	"%.1f",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT,	NULL,	NULL },
+	{ "generator_L1_voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	105,	109,	"%.1f",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT |QX_FLAG_SKIP,	NULL,	NULL },
+	{ "generator_L1_voltage",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	111,	115,	"%.1f",	QX_FLAG_QUICK_POLL | QX_FLAG_NONUT |QX_FLAG_SKIP,	NULL,	NULL },
+	{ "ups.temperature",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	117,	121,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 
 	/* Ask for battery status information
 	 * applies for infini inverters
@@ -83,7 +88,7 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    012345678901234567890   1   2
 	 *    0         1         2
 	 */
-	{ "battery.charging.current",		0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	1,	4,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //CHECK AGAIN
+	{ "battery.current",			0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	1,	4,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //CHECK AGAIN
 	{ "battery.charging.floating_voltage",	0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	6,	9,	"%.1f",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL }, //CHECK AGAIN
 	{ "battery.charging.max_charge_current",0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	11,	14,	"%.1f",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL }, //CHECK AGAIN
 	{ "battery.charging.bulk_voltage",	0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	16,	19,	"%.1f",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL },
@@ -93,6 +98,11 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 * > [LDT01020102\r]
 	 * < [(ACK9\x20\r]
 	*/
+
+	/* Feed battery from grid (ac charge) bool
+	 * > [ENFBn\r]
+	 * < [(ACK9\x20\r
+	 * */
 
 	/* ask for generated power for a specific day
 	 * > [QED20150322105\r]
@@ -109,7 +119,8 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    012345678901234567890123456789012345678901234567   8   9
 	 *    0         1         2         3         4
 	 */
-
+	{ "generator_mppt_tracknumber",	0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	41,	41,	"%s",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL },
+	{ "ups_model_type",		0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	43,	44,	"%s",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL },
 
 	/* unknown yet
 	 * applies for infini inverters (P16)
@@ -125,12 +136,15 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    012345   6
 	 */
 
-	/* unknown yet, maybe mode?
+	/* Query UPS for actual working mode
+	 * @note inverter answers have a different answer length than other voltronic UPSs
 	 * > [QMOD\r]
 	 * < [(G\xb6l\r] //pass through, charging batt, pvInput active
 	 * < [(G\xb7l\r] //pass through, charging batt, pvInput active
-	 *    0123  45
+	 *    012   34
 	 */
+	{ "ups.alarm",		0,	NULL,	"QMOD\r",	"",	4,	'(',	"",	1,	1,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	voltronic_inverter_mode },
+	{ "ups.status",		0,	NULL,	"QMOD\r",	"",	4,	'(',	"",	1,	1,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	voltronic_inverter_mode },
 
 	/* request device system time
 	 * applies for infini inverters (P16)
@@ -142,6 +156,17 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	{ "ups.date",	0,	NULL,	"QT\r",	"",	17,	'(',	"",	1,	8,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 	{ "ups.time",	0,	NULL,	"QT\r",	"",	17,	'(',	"",	9,	14,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 
+	/* Query UPS for serial number
+	 * > [QID\r]
+	 * < [(12345679012345\r]	<- As far as I know it hasn't a fixed length -> min length = ( + \r = 2
+	 *    0123456789012345
+	 *    0         1
+	 */
+	{ "device.serial",	0,	NULL,	"QID\r",	"",	2,	'(',	"",	1,	0,	"%s",	QX_FLAG_STATIC,	NULL,	voltronic_serial_numb },
+
+	/* Instant commands */
+	{ "load.off",			0,	NULL,	"SOFF\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
+	{ "load.on",			0,	NULL,	"SON\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
 	/* End of structure. */
 	{ NULL,		0,	NULL,	NULL,	"",	0,	0,	"",	0,	0,	NULL,	0,	NULL,	NULL }
 };
@@ -175,6 +200,9 @@ int voltronic_inverter_claim(void)
 		/* Unable to process value/Protocol out of range */
 		return RC_FAILED;
 	}
+
+	/* set to Solar Controller Devices */
+	dstate_setinfo("device.type", "scd");
 
 	upslogx(LOG_INFO, "successfuly claimed voltronic inverter");
 	return RC_SUCCESSFUL;

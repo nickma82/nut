@@ -26,6 +26,7 @@
 #define RC_PREPROC_SUCCESSFUL 	0
 
 #define FILTER_UINT	"0123456789"
+#define FILTER_FLOAT	"0123456789."
 
 #include <stdlib.h>
 #include "common.h"
@@ -33,5 +34,28 @@
 
 /* Preprocessing methods prototypes */
 int	voltronic_inverter_protocol(item_t *item, char *value, size_t valuelen);
+
+/** Preprocesses the UPS serial number
+ *
+ * @var[in] 		item item to be processed
+ * @var[in] value	pointer to the value stream
+ * @var[in] valuelen	value stream length
+ */
+int	voltronic_serial_numb(item_t *item, char *value, size_t valuelen);
+
+
+int	voltronic_inverter_mode(item_t *item, char *value, size_t valuelen);
+
+/**
+ * Replaces the first char of the *value through oue out of [0-]
+ * according to whether it is 0==unchanged otherwise '-'
+ *
+ * crops all leading zeros and moves the payload to the LSBs
+ *
+ * @var[in]	item  		carrying item->answer from device to be processed
+ * @var[out]	value		output processed value
+ * @var[in]	valuelen	maximum value buffer length
+ */
+int	voltronic_inverter_sign(item_t *item, char *value, size_t valuelen);
 
 #endif /* DRIVERS_NUTDRV_QX_VOLTRONIC_PREPROCESSING_H_ */
