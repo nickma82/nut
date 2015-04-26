@@ -909,7 +909,7 @@ Send +command+ or, if it is +NULL+, send the command stored in the +item+ to the
 Return +-1+ on errors, +0+ on success.
 
 *+int	ups_infoval_set(item_t *item)+*::
-Process the value we got back from the UPS (set status bits and set the value of other parameters), calling its +preprocess+ function, if any.
+Process the value we got back from the UPS (set status bits and set the value of other parameters), calling its +preprocess+ function, if any, otherwise executing the standard preprocessing (including trimming if +QX_FLAG_TRIM+ is set).
 Return +-1+ on failure, +0+ for a status update and +1+ in all other cases.
 
 *+int	qx_status(void)+*::
