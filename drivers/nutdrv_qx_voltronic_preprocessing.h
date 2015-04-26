@@ -32,6 +32,8 @@
 #include "common.h"
 #include "nutdrv_qx.h"
 
+int voltronic_inverter_qe(item_t *item, char *value, size_t valuelen);
+
 /* Preprocessing methods prototypes */
 int	voltronic_inverter_protocol(item_t *item, char *value, size_t valuelen);
 

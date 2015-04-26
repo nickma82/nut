@@ -102,7 +102,7 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	{ "ups_hasload",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	127,	127,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 	{ "battery_status",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	128,	129,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //0b00.. , 0b01..full, 0b10..discharge
 	{ "ups_inverter_direction",	0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	130,	130,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //0..feed in, 1..
-	{ "ups_line_direction",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	131,	132,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //10..feed in,
+	{ "ups_line_direction",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	131,	132,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL }, //10..feed in, 01..take from grid
 
 	/* Ask for battery status information
 	 * applies for infini inverters
@@ -116,6 +116,21 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	{ "battery.charging.max_charge_current",0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	11,	14,	"%.1f",	QX_FLAG_STATIC,	NULL,	NULL },
 	{ "battery.charging.max_charge_voltage",0,	NULL,	"QCHGS\r",	"",	22,	'(',	"",	16,	19,	"%.1f",	QX_FLAG_STATIC,	NULL,	NULL },
 
+	/* query grid output frequency
+	 * [0]gridOutputHighF; [1]gridOutputLowF
+	 * >[QGOF\r]
+	 * <
+	 */
+	{ "qgof_dummy", 			0,	NULL,	"QGOF\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC,	NULL,	NULL },
+
+	/* query grid output power max power
+	 * [1]maxOutputPower
+	 * >[QOPMP\r]
+	 * <
+	 */
+	{ "qopmp_dummy", 			0,	NULL,	"QOPMP\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC,	NULL,	NULL },
+
+
 	/* MAYBE allow battery to discharge when generator is unavailable
 	 * applies for infini inverters
 	 * > [LDT01020102\r]
@@ -127,13 +142,6 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 * < [(ACK9\x20\r
 	 * */
 
-	/* ask for generated power for a specific day
-	 * > [QED20150322105\r]
-	 * < [(005758\x43\x9b\r]
-	 * > [QED20150323106\r]
-	 * < [(020922\x98\x81\r]
-	 *    01234567   8   9
-	 */
 
 	/* pull machine rating infos
 	 * applies for infini inverters (P16)
@@ -142,31 +150,118 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    012345678901234567890123456789012345678901234567   8   9
 	 *    0         1         2         3         4
 	 */
-	{ "generator_mppt_tracknumber",	0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	41,	41,	"%s",	QX_FLAG_STATIC |QX_FLAG_NONUT,	NULL,	NULL },
-	{ "ups_machine_type",		0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	43,	44,	"%s",	QX_FLAG_STATIC ,	NULL,	NULL }, //00..grid-tie, 01..off-grid, 10..hybrid
-	{ "ups_topology",		0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	46,	46,	"%s",	QX_FLAG_STATIC ,	NULL,	NULL }, //0..transformerless, 1..transformer
+	{ "generator_mppt_tracknumber",	0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	41,	41,	"%s",	QX_FLAG_STATIC,	NULL,	NULL },
+	{ "ups_machine_type",		0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	43,	44,	"%s",	QX_FLAG_STATIC,	NULL,	NULL }, //00..grid-tie, 01..off-grid, 10..hybrid
+	{ "ups_topology",		0,	NULL,	"QPIRI\r",	"",	49,	'(',	"",	46,	46,	"%s",	QX_FLAG_STATIC,	NULL,	NULL }, //0..transformerless, 1..transformer
 
 	/* not working yet, device sends [NAKss\r]
 	 * > [QPIBI\r]
 	 * < []
-	 *     01234567890123456789012345678901234567890123456   7
-	 *     0         1         2         3         4
+	 *    01234567890123456789012345678901234567890123456   7
+	 *    0         1         2         3         4
 	 */
-	{ "qpibi_nonsense_poll",	0,	NULL,	"QPIBI\r",	"",	5,	'(',	"",	1,	1,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+	{ "qpibi_dummy",		0,	NULL,	"QPIBI\r",	"",	5,	'(',	"",	1,	1,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
 
 	/* unknown yet
-	 * applies for infini inverters (P16)
 	 * > [QPICF\r]
 	 * < [(00 00\xadM\r]   //NOTE: stop @package 266
 	 *    0123456   78
 	 *    0
 	 */
+	{ "ups_fault_status",		0,	NULL,	"QPICF\r",	"",	8,	'(',	"",	1,	2,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "ups_fault_id",		0,	NULL,	"QPICF\r",	"",	8,	'(',	"",	4,	5,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 
-	/* Set battery cut off voltage when grid is available
+	/* Set battery cut off voltage
+	 *  for both gridLoss and gridOn (%04.01f %04.01f)
 	 * > [BSDV47,9 47,9\r]
 	 * < [(ACK9\x20\r]
 	 *    012345   6
 	 */
+
+	/** query max feedGrid voltage
+	 * maxfeedgrid = qmpptvStr[0].substring(1)
+	 * > [QGPMP\r]
+	 * < [(03000u\r]
+	 *    0123456
+	 */
+	{ "ups_maxgrid_feed_power",	0,	NULL,	"QGPMP\r",	"",	6,	'(',	"",	1,	5,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+
+	/** query planID
+	 * substring(1, 3))
+	 * > [QPRIO\r]
+	 * < [(02<\r]
+	 *    01234
+	 */
+	{ "qprio_dummy",		0,	NULL,	"QPRIO\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+
+	/** query enable flags
+	 * > [QENF\r]
+	 * < [(A1B0C1D0E1F0G0H0I_J_�M\r]
+	 *    012345678901234567890123
+	 *    0         1         2
+	 */
+	{ "ups_en_charge_battery", 		0,	NULL,	"QENF\r",	"",	23,	'(',	"",	2,	2,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+	{ "ups_en_charge_battery_fromac",	0,	NULL,	"QENF\r",	"",	23,	'(',	"",	4,	4,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+	{ "ups_en_feed_into_grid",		0,	NULL,	"QENF\r",	"",	23,	'(',	"",	6,	6,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+	{ "ups_en_battery_discharge_generator_on",0,	NULL,	"QENF\r",	"",	23,	'(',	"",	8,	8,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+	{ "ups_en_battery_discharge_generator_off",0,	NULL,	"QENF\r",	"",	23,	'(',	"",	10,	10,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+	{ "ups_en_battery_feed_generator_on",	0,	NULL,	"QENF\r",	"",	23,	'(',	"",	12,	12,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+	{ "ups_en_battery_feed_generator_off",	0,	NULL,	"QENF\r",	"",	23,	'(',	"",	14,	14,	"%s",	QX_FLAG_SEMI_STATIC,	NULL,	NULL },
+
+
+	/** query AcChargeStarttime of battery
+	 * > [QPKT\r]
+	 * < [(0304 0304��\r]
+	 *    0123456789012
+	 *    0         1
+	 */
+	{ "qpkt_dummy", 		0,	NULL,	"QPKT\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+
+	/** query floating/max charching currents
+	 * > [QOFFC\r]
+	 * < [(00.0 53.0 060�L\r]
+	 *    01234567890123456
+	 *    0         1
+	 */
+	{ "qoffc_dummy",		0,	NULL,	"QOFFC\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+
+	/** query AcChargeStarttime
+	 * > [QLDT\r]
+	 * < [(0000 0000e�\r]
+	 *    0123456789012
+	 *    0         1
+	 */
+	{ "qldt_dummy", 		0,	NULL,	"QLDT\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+
+	/** query liFeSign
+	 * liFeSign = (splitArray[1] > 0) ? true : false
+	 * > [QEBGP\r]
+	 * < [(+000 00\r]| QX_FLAG_SKIP
+	 *    012345678
+	 */
+	{ "qebgp_dummy", 		0,	NULL,	"QEBGP\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+
+
+	/** query MaxAcChargingCurrent
+	 * > [QACCHC\r]
+	 * < [(NAKss\r]
+	 */
+	{ "qacchc_dummy", 		0,	NULL,	"QACCHC\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+
+	/** query high/low value
+	 * > [QDI\r]
+	 * < [(264.5 184.0 51.5 47.5 264.5 184.0 51.5 47.5 500 090 450 120 03000 253 02 04 --- --7�\r]
+	 *    01234567890123456789012345678901234567890123456789012345678901234567890123456789012345
+	 *    0         1         2         3         4         5         6         7         8
+	 */
+	{ "qdi_dummy", 			0,	NULL,	"QDI\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
+
+	/** query device model
+	 * > [QDM\r]
+	 * < [(058:\x??\r]
+	 *    012345   6
+	 */
+	{ "qdm_dummy", 			0,	NULL,	"QDM\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
 
 	/* Query UPS for actual working mode
 	 * @note inverter answers have a different answer length than other voltronic UPSs
@@ -185,8 +280,8 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    0123456789012345   6   7
 	 *    0         1
 	 */
-	{ "ups.date",	0,	NULL,	"QT\r",	"",	17,	'(',	"",	1,	8,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "ups.time",	0,	NULL,	"QT\r",	"",	17,	'(',	"",	9,	14,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "ups.date",		0,	NULL,	"QT\r",	"",	17,	'(',	"",	1,	8,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "ups.time",		0,	NULL,	"QT\r",	"",	17,	'(',	"",	9,	14,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
 
 	/* Query UPS for serial number
 	 * > [QID\r]
@@ -197,10 +292,19 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	{ "device.serial",	0,	NULL,	"QID\r",	"",	2,	'(',	"",	1,	0,	"%s",	QX_FLAG_STATIC,	NULL,	voltronic_serial_numb },
 
 	/* Instant commands */
-	{ "load.off",			0,	NULL,	"SOFF\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
-	{ "load.on",			0,	NULL,	"SON\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
+	/* ask for generated power for a specific day
+	 * > [QED20150322105\r]
+	 * < [(005758\x43\x9b\r]
+	 * > [QED20150323106\r]
+	 * < [(020922\x98\x81\r]
+	 *    01234567   8   9
+	 */
+	{ "ups.generated.daily",0,	NULL,	"QED%s\r",	"",	5,	'(',	"%s",	1,	6,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_qe },
+
+	{ "load.off",		0,	NULL,	"SOFF\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
+	{ "load.on",		0,	NULL,	"SON\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
 	/* End of structure. */
-	{ NULL,		0,	NULL,	NULL,	"",	0,	0,	"",	0,	0,	NULL,	0,	NULL,	NULL }
+	{ NULL,			0,	NULL,	NULL,	"",	0,	0,	"",	0,	0,	NULL,	0,	NULL,	NULL }
 };
 
 /* == Testing table == */

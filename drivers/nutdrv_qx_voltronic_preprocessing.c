@@ -25,13 +25,62 @@
 /* validates voltronic_inverter protocol version
  * @return RC_PREPROC_SUCCESSFUL if the protocol is supported,RC_PREPROC_FAILED otherwise
  */
-static int _validate_protocol_version(uint8_t protocol) {
-
+static int _validate_protocol_version(uint8_t protocol)
+{
 	upslogx(LOG_DEBUG, "validating protocol v%d", protocol);
 
 	if (protocol == 16)
 		return RC_PREPROC_SUCCESSFUL;
 	return RC_PREPROC_FAILED;
+}
+
+/**
+ * calculates checksums atm just seen at {QED, QEY, QEM} commands
+ * getCheckum("QED20150322", 11, chk, chkMaxSize); //expected: 105
+ * getCheckum("QED20150323", 11, chk, chkMaxSize); //expected: 106
+ */
+static void _getCheckum(const char* value, const size_t valueLen, char* chksum, size_t chksumMaxSize)
+{
+	uint16_t temp = 0;
+	size_t i = 0;
+
+	for (i = 0; i < valueLen; ++i) {
+		temp += value[i];
+	}
+	temp &= 255;
+
+	snprintf(chksum, chksumMaxSize, "%d", temp);
+}
+
+int voltronic_inverter_qe(item_t *item, char *value, size_t valuelen)
+{
+	const size_t expected_dateString_length = 8; //yyyyMMdd
+	char buf[SMALLBUF] = "\0";
+
+	upsdebugx(LOG_DEBUG, "%s: processing item->info_type:%s, value:%s, valuelen:%zu",
+			__func__, item->info_type, value, valuelen);
+
+	if (strlen(value) != strspn(value, FILTER_UINT)) {
+		upslogx(LOG_ERR, "%s: non numerical value [%s]",
+				item->info_type, value);
+		return RC_PREPROC_FAILED;
+	}
+
+	if (strlen(value) != expected_dateString_length) {
+		upslogx(LOG_ERR, "%s: expected a string formated like yyyyMMdd, actually got: %s",
+				__func__, value);
+		return RC_PREPROC_FAILED;
+	}
+
+	upsdebugx(LOG_DEBUG, "valuelen before: %zu", strlen(value));
+	snprintf(value, valuelen, item->command, value);
+	upsdebugx(LOG_DEBUG, "valuelen after: %zu", strlen(value));
+
+	_getCheckum(value, strlen(value), buf, sizeof(buf)/sizeof(buf[0]) );
+	snprintf(value, valuelen, "%s%s", value, buf);
+	upsdebugx(LOG_DEBUG, "valuelen after2: %zu, value: %s", strlen(value), value);
+
+	return RC_PREPROC_SUCCESSFUL;
 }
 
 /* Protocol used by the UPS */
@@ -44,7 +93,7 @@ int	voltronic_inverter_protocol(item_t *item, char *value, size_t valuelen)
 	int rc;
 
 	if (strncasecmp(item->value, "PI", identifierLen)) {
-		upsdebugx(2, "%s: invalid start characters [%.2s]", __func__, item->value);
+		upsdebugx(LOG_DEBUG, "%s: invalid start characters [%.2s]", __func__, item->value);
 		return RC_PREPROC_FAILED;
 	}
 	upslogx(LOG_DEBUG, "PI matched");
