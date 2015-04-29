@@ -557,6 +557,7 @@ int instcmd(const char *cmdname, const char *extradata)
 
 	/* Check for fallback if not found */
 	if (hidups_item == NULL) {
+		upsdebugx(LOG_DEBUG, "instcmd (%s) not found in nut_info, checking fallback", cmdname);
 
 		if (!strcasecmp(cmdname, "load.on")) {
 			return instcmd("load.on.delay", "0");
