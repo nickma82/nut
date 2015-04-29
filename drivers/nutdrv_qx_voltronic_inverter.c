@@ -280,8 +280,8 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 *    0123456789012345   6   7
 	 *    0         1
 	 */
-	{ "ups.date",		0,	NULL,	"QT\r",	"",	17,	'(',	"",	1,	8,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
-	{ "ups.time",		0,	NULL,	"QT\r",	"",	17,	'(',	"",	9,	14,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+	{ "ups.date",		0,	NULL,	"QT\r",	"",	17,	'(',	"",	1,	8,	"%s",	0,	NULL,	NULL },
+	{ "ups.time",		0,	NULL,	"QT\r",	"",	17,	'(',	"",	9,	14,	"%s",	0,	NULL,	NULL },
 
 	/* Query UPS for serial number
 	 * > [QID\r]
@@ -299,7 +299,7 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 * < [(020922\x98\x81\r]
 	 *    01234567   8   9
 	 */
-	{ "ups.generated.daily",0,	NULL,	"QED%s\r",	"",	5,	'(',	"%s",	1,	6,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_qe },
+	{ "ups.generated.daily", 0,	NULL,	"QED%s\r",	"",	5,	'(',	"",	1,	6,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_qe },
 
 	{ "load.off",		0,	NULL,	"SOFF\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
 	{ "load.on",		0,	NULL,	"SON\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
