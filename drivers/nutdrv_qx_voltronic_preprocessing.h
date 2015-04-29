@@ -32,6 +32,10 @@
 #include "common.h"
 #include "nutdrv_qx.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Is used to dynamically process QE{D,M,Y} commands
  *
@@ -69,5 +73,9 @@ int	voltronic_inverter_mode(item_t *item, char *value, size_t valuelen);
  * @var[in]	valuelen	maximum value buffer length
  */
 int	voltronic_inverter_sign(item_t *item, char *value, const size_t valuelen);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* DRIVERS_NUTDRV_QX_VOLTRONIC_PREPROCESSING_H_ */
