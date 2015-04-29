@@ -19,8 +19,8 @@
  *
  */
 
-#include "nutdrv_qx_voltronic_preprocessing.h"
 #include <stdint.h>
+#include "nutdrv_qx_voltronic_preprocessing.h"
 
 /* validates voltronic_inverter protocol version
  * @return RC_PREPROC_SUCCESSFUL if the protocol is supported,RC_PREPROC_FAILED otherwise
@@ -52,34 +52,24 @@ static void _getCheckum(const char* value, const size_t valueLen, char* chksum, 
 	snprintf(chksum, chksumMaxSize, "%d", temp);
 }
 
-int voltronic_inverter_qe(item_t *item, char *value, size_t valuelen)
+int voltronic_inverter_qe(const item_t *item, char *value, const size_t valuelen)
 {
-	const size_t expected_dateString_length = 8; //yyyyMMdd
+	const size_t dateSize = 8;
 	char buf[SMALLBUF] = "\0";
+	upsdebugx(LOG_INFO, "%s: processing item->info_type:%s, value:%s, valuelen:%zu, item->command:%s",
+			__func__, item->info_type, value, valuelen, item->command);
 
-	upsdebugx(LOG_DEBUG, "%s: processing item->info_type:%s, value:%s, valuelen:%zu",
-			__func__, item->info_type, value, valuelen);
-
-	if (strlen(value) != strspn(value, FILTER_UINT)) {
-		upslogx(LOG_ERR, "%s: non numerical value [%s]",
-				item->info_type, value);
+	if (strlen(value) != dateSize) {
+		upsdebugx(LOG_ERR, "insufficient date length: %zu", strlen(buf));
 		return RC_PREPROC_FAILED;
 	}
 
-	if (strlen(value) != expected_dateString_length) {
-		upslogx(LOG_ERR, "%s: expected a string formated like yyyyMMdd, actually got: %s",
-				__func__, value);
-		return RC_PREPROC_FAILED;
-	}
+	snprintf(buf, SMALLBUF, item->command, value);
 
-	upsdebugx(LOG_DEBUG, "valuelen before: %zu", strlen(value));
-	snprintf(value, valuelen, item->command, value);
-	upsdebugx(LOG_DEBUG, "valuelen after: %zu", strlen(value));
+	_getCheckum(buf, strlen(buf)-(buf[strlen(buf)-1]=='\r'), buf+strlen(buf)-1, valuelen-strlen(buf));
 
-	_getCheckum(value, strlen(value), buf, sizeof(buf)/sizeof(buf[0]) );
-	snprintf(value, valuelen, "%s%s", value, buf);
-	upsdebugx(LOG_DEBUG, "valuelen after2: %zu, value: %s", strlen(value), value);
-
+	/* copy back value*/
+	snprintf(value, valuelen, "%s\r", buf);
 	return RC_PREPROC_SUCCESSFUL;
 }
 
@@ -220,40 +210,44 @@ int	voltronic_inverter_mode(item_t *item, char *value, size_t valuelen)
 	return RC_PREPROC_SUCCESSFUL;
 }
 
-int	voltronic_inverter_sign(item_t *item, char *value, size_t valuelen) {
-	const size_t minimum_supported_length = 2;
-	const char staypositive_char = '0';
+int	voltronic_inverter_sign(item_t *item, char *value, const size_t valuelen) {
+	const size_t minimal_supported_length = 2;
 
 	char* payload = item->value;
+	const uint8_t make_value_negative = (*payload != '0');
 	size_t leadin_zero_length = 0;
-	size_t payload_length = (strlen(payload) < valuelen) ? strlen(payload) : valuelen;
+	size_t payload_length = strlen(payload);
 
-	if (payload_length < minimum_supported_length) {
+	/* check item->value validity*/
+	if (payload_length < minimal_supported_length) {
 		upsdebugx(LOG_ERR, "%s: length [%zu] insufficient (strlen(item->value):%zu, valuelen:%zu): %s",
 				__func__, payload_length, strlen(item->value), valuelen, item->value);
 		return RC_PREPROC_FAILED;
 	}
-
-	/* check item->value validity*/
 	if (strspn(payload, FILTER_FLOAT) != payload_length) {
 		upsdebugx(LOG_ERR, "%s: non numerical item->value [%s: %s]", __func__, item->info_type, payload);
 		return RC_PREPROC_FAILED;
 	}
 
 	/* process negative indicator */
-	if (*payload != staypositive_char) {
+	if (make_value_negative) {
 		*(value++) = '-';
 		payload++;
-		payload_length--;
 	}
 
-	/* move to MSB position 0's, fill everything else with \0 */
 	leadin_zero_length = strspn(payload, "0");
-	if (leadin_zero_length) {
-		payload_length -= leadin_zero_length;
+	payload_length -= (leadin_zero_length + make_value_negative);
+	if (payload_length+make_value_negative > valuelen) {
+		upsdebugx(LOG_ERR, "target value buffer too small(size:%zu) for value", valuelen);
+		return RC_PREPROC_FAILED;
+	}
 
+	/* copy back value */
+	if (payload_length) {
 		upsdebugx(LOG_DEBUG, "%s: item->value:%s", __func__, item->value);
 		snprintf(value, payload_length+1, "%s", payload+leadin_zero_length);
+	} else {
+		value[0] = '0';
 	}
 
 	return RC_PREPROC_SUCCESSFUL;
