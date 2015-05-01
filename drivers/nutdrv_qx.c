@@ -2663,12 +2663,17 @@ static int	qx_process_answer(item_t *item, const int len)
  * Return -1 on errors, 0 on success */
 int	qx_process(item_t *item, const char *command)
 {
+	int	len = 0;
 	char	buf[SMALLBUF] = "";
+	memset(item->answer, 0, sizeof(item->answer)/sizeof(item->answer[0]));
 
 	/* Send the command */
-	int	len = qx_command(command ? command : item->command, buf, sizeof(buf));
+	len = qx_command(command ? command : item->command, buf, sizeof(buf));
+	if (len < 0) {
+		upsdebugx(LOG_ERR, "%s: qx_command failed with rc:%d", __func__, len);
+		return -1;
+	}
 
-	memset(item->answer, 0, sizeof(item->answer));
 	memcpy(item->answer, buf, sizeof(item->answer) <= sizeof(buf) ? sizeof(item->answer) - 1 : sizeof(buf));
 
 	/* Preprocess the answer */
