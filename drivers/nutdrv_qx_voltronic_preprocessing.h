@@ -53,8 +53,8 @@ int	voltronic_inverter_protocol(item_t *item, char *value, size_t valuelen);
 /** Preprocesses the UPS serial number
  *
  * @var[in] 		item item to be processed
- * @var[in] value	pointer to the value stream
- * @var[in] valuelen	value stream length
+ * @var[out] value	pointer to the value stream
+ * @var[in] valuelen	max value buffer size
  */
 int	voltronic_serial_numb(item_t *item, char *value, size_t valuelen);
 
