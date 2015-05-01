@@ -1143,7 +1143,7 @@ int	instcmd(const char *cmdname, const char *extradata)
 	snprintf(value, sizeof(value), "%s", extradata ? extradata : "");
 
 	/* Preprocess command */
-	if (item->preprocess != NULL && item->preprocess(item, value, sizeof(value))) {
+	if (item->preprocess != NULL && item->preprocess(item, PRE_SEND, value, sizeof(value))) {
 		/* Something went wrong */
 		upslogx(LOG_ERR, "%s: FAILED", __func__);
 		return STAT_INSTCMD_FAILED;
@@ -1262,7 +1262,7 @@ int	setvar(const char *varname, const char *val)
 			/* Loop on all existing values */
 			for (rvalue = item->info_rw; rvalue != NULL && strlen(rvalue->value) > 0; rvalue++) {
 
-				if (rvalue->preprocess && rvalue->preprocess(rvalue->value, sizeof(rvalue->value)))
+				if (rvalue->preprocess && rvalue->preprocess(rvalue->value, OTHERS, sizeof(rvalue->value)))
 					continue;
 
 				if (min < 0) {
@@ -1330,7 +1330,7 @@ int	setvar(const char *varname, const char *val)
 			/* Loop on all existing values */
 			for (envalue = item->info_rw; envalue != NULL && strlen(envalue->value) > 0; envalue++) {
 
-				if (envalue->preprocess && envalue->preprocess(envalue->value, sizeof(envalue->value)))
+				if (envalue->preprocess && envalue->preprocess(envalue->value, OTHERS, sizeof(envalue->value)))
 					continue;
 
 				if (strcasecmp(envalue->value, value))
@@ -1392,7 +1392,7 @@ int	setvar(const char *varname, const char *val)
 	}
 
 	/* Preprocess value: from NUT-compliant to UPS-compliant */
-	if (item->preprocess != NULL && item->preprocess(item, value, sizeof(value))) {
+	if (item->preprocess != NULL && item->preprocess(item, PRE_SEND, value, sizeof(value))) {
 		/* Something went wrong */
 		upslogx(LOG_ERR, "%s: FAILED", __func__);
 		return STAT_SET_UNKNOWN;	/* TODO: HANDLED but FAILED, not UNKNOWN! */
@@ -2701,7 +2701,7 @@ int	ups_infoval_set(item_t *item)
 	if (item->preprocess != NULL){
 
 		/* Process the value returned by the UPS to NUT standards */
-		if (item->preprocess(item, value, sizeof(value))) {
+		if (item->preprocess(item, POST_RECEIVE, value, sizeof(value))) {
 			upsdebugx(4, "%s: failed to preprocess value [%s: %s]", __func__, item->info_type, item->value);
 			return -1;
 		}

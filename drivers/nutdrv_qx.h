@@ -59,6 +59,13 @@ typedef struct {
 							 * This function will be given value and its size_t and must return either 0 if value is supported or -1 if not supported. */
 } info_rw_t;
 
+typedef enum {
+	PRE_SEND,
+	POST_RECEIVE,
+	OTHERS
+} preprocessing_type_t;
+
+
 /* Structure containing information about how to get/set data from/to the UPS and convert these to/from NUT standard */
 typedef struct item_t {
 	const char	*info_type;		/* NUT variable name
@@ -93,8 +100,9 @@ typedef struct item_t {
 						 * This function is given the currently processed item (item) with the answer we got from the UPS unmolested and already stored in item->answer and the length of that answer (len).
 						 * Return -1 in case of errors, else the length of the newly allocated item->answer (from now on, treated as a null-terminated string). */
 
-	int		(*preprocess)(struct item_t *item, char *value, size_t valuelen);	/* Function to preprocess the data from/to the UPS
+	int		(*preprocess)(struct item_t *item, const preprocessing_type_t dir, char *value, size_t valuelen);	/* Function to preprocess the data from/to the UPS
 						 * This function is given the currently processed item (item), a char array (value) and its size_t (valuelen).
+						 * @var[in]	dir direction of the preprocessing procedure
 						 * Return -1 in case of errors, else 0.
 						 * If QX_FLAG_SETVAR/QX_FLAG_CMD -> process command before it is sent: value must be filled with the command to be sent to the UPS.
 						 * Otherwise -> process value we got from answer before it gets stored in a NUT variable: value must be filled with the processed value already compliant to NUT standards. */
