@@ -33,4 +33,14 @@
 
 extern subdriver_t	voltronic_inverter_subdriver;
 
+/* e.g.: instead of the following
+ *	{ "input.voltage",		0,	NULL,	"QPIGS\r",	"",	136,	'(',	"",	1,	5,	"%.1f",	QX_FLAG_QUICK_POLL,	NULL,	NULL },
+ * one is able to use something like the following:
+ *	ITEM_QUICKPOLL_BARE("input.voltage",	"QPIGS\r",	136,	'(',	1,	5,	"%.1f"),
+ */
+#define ITEM_QUICKPOLL_BARE(info_type, command, answer_len, leading, from, to, dfl) \
+	{ info_type, 0, NULL, command, "", answer_len, leading,	"",	from, to,	dfl,	QX_FLAG_QUICK_POLL,	NULL,	NULL }
+
+#define ITEM_QPIGS(info_type, from, to, dfl) ITEM_QUICKPOLL_BARE(info_type, "QPIGS\r", 136, '(', from, to, dfl)
+
 #endif /* DRIVERS_NUTDRV_QX_VOLTRONIC_INVERTER_H_ */
