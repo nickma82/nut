@@ -8,6 +8,7 @@ class Voltronic_inverter_preprocessor : public CppUnit::TestFixture
   CPPUNIT_TEST_SUITE( Voltronic_inverter_preprocessor );
     CPPUNIT_TEST( test_inverter_sign );
     CPPUNIT_TEST( test_voltronic_inverter_qe );
+    CPPUNIT_TEST( test_voltronic_inverter_cmd_boolinput );
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -16,6 +17,7 @@ public:
 
   void test_inverter_sign();
   void test_voltronic_inverter_qe();
+  void test_voltronic_inverter_cmd_boolinput();
 };
 
 // Registers the fixture into the 'registry'
@@ -26,7 +28,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Voltronic_inverter_preprocessor );
 
 void Voltronic_inverter_preprocessor::test_inverter_sign()
 {
-	char value[SMALLBUF];
+	char value[SMALLBUF] = "\0";
 	item_t item = { NULL,		0,	NULL,	NULL,	"",	0,	0,	"000",	0,	0,	"%s",	0,	NULL,	NULL };
 
 	int rc = 0;
@@ -74,7 +76,7 @@ void Voltronic_inverter_preprocessor::test_inverter_sign()
 
 void Voltronic_inverter_preprocessor::test_voltronic_inverter_qe() {
 
-	char value[SMALLBUF];
+	char value[SMALLBUF]="\0";
 	item_t item = { NULL,		0,	NULL,	"QED%s\r",	"",	0,	0,	"000",	0,	0,	"%s",	0,	NULL,	NULL };
 
 	memcpy(value, "20150322", 8);
@@ -94,5 +96,42 @@ void Voltronic_inverter_preprocessor::test_voltronic_inverter_qe() {
 	rc = voltronic_inverter_qe(&item, value, SMALLBUF);
 	CPPUNIT_ASSERT_EQUAL(RC_PREPROC_FAILED, rc);
 
+	memset(value, '\0', SMALLBUF);
+	memcpy(value, "20150101", 8);
+	rc = voltronic_inverter_qe(&item, value, SMALLBUF);
+	CPPUNIT_ASSERT_EQUAL(std::string("QED20150101100\r"), std::string(value));
+	CPPUNIT_ASSERT_EQUAL(RC_PREPROC_SUCCESSFUL, rc);
+}
 
+void Voltronic_inverter_preprocessor::test_voltronic_inverter_cmd_boolinput() {
+	char value[SMALLBUF] = "\0";
+	item_t item = { NULL,		0,	NULL,	"FOO%d\r",	"",	0,	0,	"000",	0,	0,	"%s",	0,	NULL,	NULL };
+
+	memcpy(value, "enable", 6);
+	int rc = voltronic_inverter_cmd_boolinput(&item, value, SMALLBUF);
+	CPPUNIT_ASSERT_EQUAL(std::string("FOO1\r"), std::string(value));
+	CPPUNIT_ASSERT_EQUAL(RC_PREPROC_SUCCESSFUL, rc);
+
+	memset(value, '\0', SMALLBUF);
+	memcpy(value, "1", 1);
+	rc = voltronic_inverter_cmd_boolinput(&item, value, SMALLBUF);
+	CPPUNIT_ASSERT_EQUAL(std::string("FOO1\r"), std::string(value));
+	CPPUNIT_ASSERT_EQUAL(RC_PREPROC_SUCCESSFUL, rc);
+
+	memset(value, '\0', SMALLBUF);
+	memcpy(value, "disable", 7);
+	rc = voltronic_inverter_cmd_boolinput(&item, value, SMALLBUF);
+	CPPUNIT_ASSERT_EQUAL(std::string("FOO0\r"), std::string(value));
+	CPPUNIT_ASSERT_EQUAL(RC_PREPROC_SUCCESSFUL, rc);
+
+	memset(value, '\0', SMALLBUF);
+	memcpy(value, "0", 1);
+	rc = voltronic_inverter_cmd_boolinput(&item, value, SMALLBUF);
+	CPPUNIT_ASSERT_EQUAL(std::string("FOO0\r"), std::string(value));
+	CPPUNIT_ASSERT_EQUAL(RC_PREPROC_SUCCESSFUL, rc);
+
+	memset(value, '\0', SMALLBUF);
+	memcpy(value, "bar", 3);
+	rc = voltronic_inverter_cmd_boolinput(&item, value, SMALLBUF);
+	CPPUNIT_ASSERT_EQUAL(RC_PREPROC_FAILED, rc);
 }
