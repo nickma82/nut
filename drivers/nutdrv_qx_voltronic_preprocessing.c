@@ -252,3 +252,20 @@ int	voltronic_inverter_sign(item_t *item, char *value, const size_t valuelen) {
 
 	return RC_PREPROC_SUCCESSFUL;
 }
+
+int	voltronic_inverter_cmd_boolinput(item_t *item, char *value, const size_t valuelen)
+{
+	uint8_t 	tmpBool = 0;
+
+	if (!strcmp(value, "0") || !strcasecmp(value, "disable")) {
+		tmpBool = 0;
+	} else if((!strcmp(value, "1") || !strcasecmp(value, "enable"))) {
+		tmpBool = 1;
+	} else {
+		upsdebugx(LOG_DEBUG, "%s: input unknown value:%s", __func__, value);
+		return RC_PREPROC_FAILED;
+	}
+
+	snprintf(value, valuelen, item->command, tmpBool);
+	return RC_PREPROC_SUCCESSFUL;
+}

@@ -74,6 +74,15 @@ int	voltronic_inverter_mode(item_t *item, char *value, size_t valuelen);
  */
 int	voltronic_inverter_sign(item_t *item, char *value, const size_t valuelen);
 
+/**
+ * takes the user command value inside of *value and according to that
+ * processes the item->command %d argument
+ *
+ * item->command constructed command into *value
+ */
+int	voltronic_inverter_cmd_boolinput(item_t *item, char *value, const size_t valuelen);
+
+
 #ifdef __cplusplus
 }
 #endif
