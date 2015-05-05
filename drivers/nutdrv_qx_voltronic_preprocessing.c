@@ -39,7 +39,7 @@ static int _validate_protocol_version(uint8_t protocol)
  * getCheckum("QED20150322", 11, chk, chkMaxSize); //expected: 105
  * getCheckum("QED20150323", 11, chk, chkMaxSize); //expected: 106
  */
-static void _getCheckum(const char* value, const size_t valueLen, char* chksum, size_t chksumMaxSize)
+static void _getChecksum(const char* value, const size_t valueLen, char* chksum, size_t chksumMaxSize)
 {
 	uint16_t temp = 0;
 	size_t i = 0;
@@ -66,7 +66,7 @@ int voltronic_inverter_qe(const item_t *item, char *value, const size_t valuelen
 
 	snprintf(buf, SMALLBUF, item->command, value);
 
-	_getCheckum(buf, strlen(buf)-(buf[strlen(buf)-1]=='\r'), buf+strlen(buf)-1, valuelen-strlen(buf));
+	_getChecksum(buf, strlen(buf)-(buf[strlen(buf)-1]=='\r'), buf+strlen(buf)-1, valuelen-strlen(buf));
 
 	/* copy back value*/
 	snprintf(value, valuelen, "%s\r", buf);
