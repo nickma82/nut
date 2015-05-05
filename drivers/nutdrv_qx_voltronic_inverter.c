@@ -119,16 +119,16 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	/* query grid output frequency
 	 * [0]gridOutputHighF; [1]gridOutputLowF
 	 * >[QGOF\r]
-	 * <
+	 * <[(51.5 47.5,\r]
 	 */
-	{ "qgof_dummy", 			0,	NULL,	"QGOF\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC,	NULL,	NULL },
+	{ "qgof_dummy", 			0,	NULL,	"QGOF\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC | QX_FLAG_SKIP,	NULL,	NULL },
 
 	/* query grid output power max power
 	 * [1]maxOutputPower
-	 * >[QOPMP\r]
-	 * <
+	 * > [QOPMP\r]
+	 * < [(03000u\r]
 	 */
-	{ "qopmp_dummy", 			0,	NULL,	"QOPMP\r",	"",	5,	'(',	"",	0,	0,	"%s",	QX_FLAG_STATIC,	NULL,	NULL },
+	{ "ups_output_power_max", 			0,	NULL,	"QOPMP\r",	"",	5,	'(',	"",	1,	5,	"%s",	QX_FLAG_STATIC,	NULL,	NULL },
 
 	/* pull machine rating infos
 	 * applies for infini inverters (P16)
@@ -261,7 +261,6 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	{ "ups.status",		0,	NULL,	"QMOD\r",	"",	4,	'(',	"",	1,	1,	"%s",	QX_FLAG_QUICK_POLL,	NULL,	voltronic_inverter_mode },
 
 	/* request device system time
-	 * applies for infini inverters (P16)
 	 * > [QT\r]
 	 * < [(20150321210652\xe9\x1e\r
 	 *    0123456789012345   6   7
@@ -289,7 +288,6 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 * < []
 	 */
 	{ "ac_charge_timerange", 	0,	NULL,	"PKT%04d %04d\r",	"",	5,	'(',	"",	1,	2,	"%s",	QX_FLAG_CMD | QX_FLAG_SKIP,	NULL,	NULL },
-
 
 	/* enable commands */
 	/* Allow AC to charge battery - set enable feed battery from grid (ac charge)
@@ -331,7 +329,7 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 * < [(020922\x98\x81\r]
 	 *    01234567   8   9
 	 */
-	{ "ups.generated.daily", 0,	NULL,	"QED%s\r",	"",	5,	'(',	"",	1,	6,	"%s",	QX_FLAG_CMD,	NULL,	voltronic_inverter_qe },
+	//{ "ups.generated.daily", 0,	NULL,	"QED%s\r",	"",	5,	'(',	"",	1,	6,	"%s",	QX_FLAG_CMD,	NULL,	voltronic_inverter_qe },
 
 	{ "load.off",		0,	NULL,	"SOFF\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
 	{ "load.on",		0,	NULL,	"SON\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	NULL },
