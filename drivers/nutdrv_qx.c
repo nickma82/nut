@@ -33,7 +33,7 @@
  *
  */
 
-#define DRIVER_VERSION	"0.19"
+#define DRIVER_VERSION	"0.20"
 
 #include "main.h"
 
@@ -1152,7 +1152,7 @@ int	instcmd(const char *cmdname, const char *extradata)
 		snprintf(value, sizeof(value), "%s", "");
 
 	/* Send the command, get the reply */
-	if (qx_process(item, strlen(value) > 0 ? value : NULL)) {
+	if (qx_process(item, strlen(value) > 0 ? value : NULL, sizeof(value))) {
 		/* Something went wrong */
 		upslogx(LOG_ERR, "%s: FAILED", __func__);
 		return STAT_INSTCMD_FAILED;
@@ -1409,7 +1409,7 @@ int	setvar(const char *varname, const char *val)
 		snprintf(value, sizeof(value), "%s", "");
 
 	/* Actual variable setting */
-	if (qx_process(item, strlen(value) > 0 ? value : NULL)) {
+	if (qx_process(item, strlen(value) > 0 ? value : NULL, sizeof(value))) {
 		/* Something went wrong */
 		upslogx(LOG_ERR, "%s: FAILED", __func__);
 		return STAT_SET_UNKNOWN;	/* TODO: HANDLED but FAILED, not UNKNOWN! */
@@ -2451,7 +2451,7 @@ static bool_t	qx_ups_walk(walkmode_t mode)
 		/* ..otherwise: execute command to get answer from the UPS */
 		} else {
 
-			retcode = qx_process(item, NULL);
+			retcode = qx_process(item, NULL, 0);
 
 		}
 
@@ -2659,12 +2659,27 @@ static int	qx_process_answer(item_t *item, const int len)
 
 /* Send the command to the UPS and process the reply.
  * Return -1 on errors, 0 on success */
-int	qx_process(item_t *item, const char *command)
+int	qx_process(item_t *item, const char *command, const size_t commandlen)
 {
-	char	buf[SMALLBUF] = "";
+	char	buf[SMALLBUF] = "",
+		cmd[command && commandlen ? commandlen : sizeof(item->command)];
+	int	len;
+
+	/* Prepare the command to be used */
+	memset(cmd, 0, sizeof(cmd));
+	memcpy(cmd, command && commandlen ? command : item->command, sizeof(cmd));
+
+	/* Preprocess the command */
+	if (
+		item->preprocess_command != NULL &&
+		item->preprocess_command(item, cmd, sizeof(cmd)) == -1
+	) {
+		upsdebugx(4, "%s: failed to preprocess command [%s]", __func__, item->info_type);
+		return -1;
+	}
 
 	/* Send the command */
-	int	len = qx_command(command ? command : item->command, buf, sizeof(buf));
+	len = qx_command(cmd, buf, sizeof(buf));
 
 	memset(item->answer, 0, sizeof(item->answer));
 	memcpy(item->answer, buf, sizeof(item->answer) <= sizeof(buf) ? sizeof(item->answer) - 1 : sizeof(buf));
