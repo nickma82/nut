@@ -277,7 +277,7 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 */
 	{ "device.serial",	0,	NULL,	"QID\r",	"",	2,	'(',	"",	1,	0,	"%s",	QX_FLAG_STATIC,	NULL,	voltronic_serial_numb },
 
-	/* Instant commands */
+	/************ Instant commands *************/
 	/* Set AcoutputStarttime and AcoutputEndtime (formate is hhmm)
 	 * > [LDT0102 0102\r]
 	 * < []
@@ -294,32 +294,33 @@ static item_t	voltronic_inverter_qx2nut[] = {
 	 * > [ENFBn\r]
 	 * < [(ACK9\x20\r
 	 */
-	{ "battery.feedfromac",	0,	NULL,	"ENFB%d\r",	"",	5,	'(',	"",	1,	3,	"%s",	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
+	{ "battery.chargefromac",	0,	NULL,	"ENFB%d\r",	"",	5,	'(',	"",	1,	3,	"%s",	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
 	/* Allow battery to discharge when PV is unavailable (set bat Dis Pv Loss)
+	 * ups_en_battery_discharge_generator_off
 	 * > [ENFEn\r]
 	 * < [(ACK9\x20\r
 	 */
-	{ "battery.enfe",	0,	NULL,	"ENFE%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
+	{ "battery.discharge.generator.off",	0,	NULL,	"ENFE%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
 	/* Allow battery to discharge when PV is available (set bat Dis Pv On)
 	 * > [ENFDn\r]
 	 * < [(ACK9\x20\r
 	 */
-	{ "battery.enfd",	0,	NULL,	"ENFD%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
+	{ "battery.discharge.generator.on",	0,	NULL,	"ENFD%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
 	/* Allow (PV) to feed-in to Grid (Pv Feed Grid)
 	 * > [ENFCn\r]
 	 * < [(ACK9\x20\r
 	 */
-	{ "battery.enfc",	0,	NULL,	"ENFC%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
+	{ "generator.feedgrid",	0,	NULL,	"ENFC%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
 	/* Allow battery to feed-in to the Grid when PV is available (bat Feed Pv On)
 	 * > [ENFFn\r]
 	 * < [(ACK9\x20\r
 	 */
-	{ "battery.enff",	0,	NULL,	"ENFF%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
+	{ "battery.feedgrid.generator.on",	0,	NULL,	"ENFF%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
 	/* Allow battery to feed-in to the Grid when PV is unavailable (set bat Feed pv loss)
 	 * > [ENFGn\r]
 	 * < [(ACK9\x20\r
 	 */
-	{ "battery.enfg",	0,	NULL,	"ENFG%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
+	{ "battery.feedgrid.generator.off",	0,	NULL,	"ENFG%d\r",	"",	5,	'(',	"",	1,	3,	NULL,	QX_FLAG_CMD,	NULL,	voltronic_inverter_cmd_boolinput },
 
 
 	/* ask for generated power for a specific day
