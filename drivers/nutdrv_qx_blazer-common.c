@@ -53,7 +53,7 @@ int	blazer_claim(void)
 		return 0;
 
 	/* No reply/Unable to get value */
-	if (qx_process(item, NULL))
+	if (qx_process(item, NULL, 0))
 		return 0;
 
 	/* Unable to process value */
@@ -73,7 +73,7 @@ int	blazer_claim(void)
 	}
 
 	/* No reply/Unable to get value */
-	if (qx_process(item, NULL)) {
+	if (qx_process(item, NULL, 0)) {
 		dstate_delinfo("input.voltage");
 		return 0;
 	}
@@ -100,7 +100,7 @@ int	blazer_claim_light(void)
 		return 0;
 
 	/* No reply/Unable to get value */
-	if (qx_process(item, NULL))
+	if (qx_process(item, NULL, 0))
 		return 0;
 
 	/* Unable to process value */
