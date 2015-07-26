@@ -511,17 +511,18 @@ static info_rw_t	voltronic_sunny_r_mpp_input_volt_min[] = {
 	{ "", 0 }
 };
 
+#define OVERWRITE_EN_VALUE "0"
 /* Range for maximum output power: filled(/overwritten, if appropriate) at runtime by voltronic_sunny_set_limits() (QVFTR #23, #24) and voltronic_sunny_update_related_vars_limits() */
 static info_rw_t	voltronic_sunny_r_output_realpower_max[] = {
-	{ "0", 0 },
-	{ "", 0 },
+	{ OVERWRITE_EN_VALUE, 0 },
+	{ OVERWRITE_EN_VALUE, 0 },
 	{ "", 0 }
 };
 
 /* Range for maximum power feeding grid: max value filled at runtime by voltronic_sunny_update_related_vars_limits() */
 static info_rw_t	voltronic_sunny_r_grid_realpower_max[] = {
-	{ "0", 0 },
-	{ "", 0 },
+	{ OVERWRITE_EN_VALUE, 0 },
+	{ OVERWRITE_EN_VALUE, 0 },
 	{ "", 0 }
 };
 
@@ -1960,7 +1961,7 @@ static void	voltronic_sunny_update_related_vars_limits(item_t *item, const char 
 		{ "battery.charging.current.floating.low",	"battery.charging.current.high",		0 },	/*	QOFFC #1 sets the MIN settable value of QCHGS #3 */
 		{ "battery.charging.restartvoltage",		"battery.charging.voltage.floating",		0 },	/* [1]	QOFFC #2 sets the MIN settable value of QCHGS #2 */
 		{ "output.realpower.max",			"grid.realpower.max",				1 },	/*	QOPMP #1 sets the MAX settable value of QGPMP #1 */
-		{ "grid.realpower.max",				"output.realpower.max",				0 },	/*	QGPMP #1 sets the MIN settable value of QOPMP #1 */
+//		{ "grid.realpower.max",				"output.realpower.max",				1 },	/*	QGPMP #1 sets the MIN settable value of QOPMP #1 */
 		{ "output.realpower.nominal",			"output.realpower.max",				1 },	/*	QMD   #2 sets the MAX settable value of QOPMP #1 */
 		{ NULL }												/* [1]:	The min settable value of QCHGS #2 is the greatest one among these 3 values	*/
 	};
