@@ -226,8 +226,8 @@ static info_rw_t	voltronic_sunny_e_volt_nom[] = {
 
 /* Enumlist for nominal frequency */
 static info_rw_t	voltronic_sunny_e_freq_nom[] = {
-	{ "50", 0 },
-	{ "60", 0 },
+	{ "50.0", 0 },
+	{ "60.0", 0 },
 	{ "", 0 }
 };
 
