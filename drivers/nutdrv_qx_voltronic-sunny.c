@@ -2735,7 +2735,7 @@ static int	voltronic_sunny_01_set(item_t *item, char *value, const size_t valuel
 static int	voltronic_sunny_pv_priority(item_t *item, char *value, const size_t valuelen)
 {
 	int		priority_id;
-	const char	*priority;
+	const char	*priority = NULL;
 	info_rw_t	*envalue;
 
 	if (strspn(item->value, "0123456789") != strlen(item->value)) {
