@@ -3139,7 +3139,7 @@ static int	voltronic_sunny_set_limits(item_t *item, char *value, const size_t va
 		if (index <= 1)
 			continue;
 
-		/* Clear data */
+		/* Clear every other data */
 		memset(rwvalue->value, 0, sizeof(rwvalue->value));
 
 	}
