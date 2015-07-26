@@ -798,7 +798,7 @@ static item_t	voltronic_sunny_qx2nut[] = {
 	 *    0         1         2         3         4
 	 */
 
-	{ "grid.voltage.nominal",			ST_FLAG_RW,			voltronic_sunny_e_volt_nom,		"QPIRI\r",			"",	48,	'(',	"",	1,	5,	"%.1f",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_unskip_setvar },
+	{ "grid.voltage.nominal",			ST_FLAG_RW,			voltronic_sunny_e_volt_nom,		"QPIRI\r",			"",	48,	'(',	"",	1,	3,	"%.0f",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_unskip_setvar },
 	{ "grid.frequency.nominal",			ST_FLAG_RW,			voltronic_sunny_e_freq_nom,		"QPIRI\r",			"",	48,	'(',	"",	7,	10,	"%.1f",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_unskip_setvar },
 	{ "grid.current.nominal",			0,				NULL,					"QPIRI\r",			"",	48,	'(',	"",	12,	16,	"%.1f",			QX_FLAG_STATIC,							NULL,				voltronic_sunny_checkcrc,		NULL },
 	{ "output.voltage.nominal",			0,				NULL,					"QPIRI\r",			"",	48,	'(',	"",	18,	22,	"%.1f",			QX_FLAG_STATIC,							NULL,				voltronic_sunny_checkcrc,		NULL },
