@@ -2722,6 +2722,7 @@ static int	voltronic_sunny_01_set(item_t *item, char *value, const size_t valuel
 {
 	int	i;
 
+	//TODO check what that should do?
 	for (i = 0; strlen(item->info_rw[i].value) > 0; i++) {
 		if (!strcasecmp(item->info_rw[i].value, value))
 			break;
@@ -2810,6 +2811,14 @@ static int	voltronic_sunny_pv_priority_set(item_t *item, char *value, const size
 	int		priority = -1;
 	const char	*model = NULL;
 
+	//TODO in case of model type in {"10", "01", "00"} it has to
+	// 	1. excuteCommand("GTS", "1")
+	//	2. wait 1500ms
+	//	3. rc = handler.excuteCommand("QMOD", true);
+	//	4. if rc not starts with "(S", repeat steps 1 to 4 max three times
+	//	5. set PRIO<n>
+	// send: PRIO03, read: (NAKss
+	// send: PRIO01, read: (NAKss
 	switch (model_type)
 	{
 	case 1:		/* Type: Off-grid */
@@ -3888,7 +3897,9 @@ static int	voltronic_sunny_warning(item_t *item, char *value, const size_t value
 	return 0;
 }
 
-/* Working mode reported by the device	TODO: improve status mapping in NUT (add 'scd.status'?) */
+/* Working mode reported by the device	TODO: improve status mapping in NUT (add 'scd.status'?)
+ * TODO reconsider standard operation modes [Bypass with PV charging,Bypass without charging,Grid-tie with backup]
+ * 	handling as alarm states. */
 static int	voltronic_sunny_mode(item_t *item, char *value, const size_t valuelen)
 {
 	char	*status = NULL, *alarm = NULL;
