@@ -705,31 +705,32 @@ static item_t	voltronic_sunny_qx2nut[] = {
 	 *    0         1         2
 	 */
 
-	{ "charge_battery",				ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	2,	2,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* A */
-	{ "charge_battery_from_ac",			ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	4,	4,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* B */
-	{ "feed_grid",					ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	6,	6,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* C */
-	{ "discharge_battery_when_pv_on",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	8,	8,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* D */
-	{ "discharge_battery_when_pv_off",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	10,	10,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* E */
-	{ "feed_grid_from_battery_when_pv_on",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	12,	12,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* F */
-	{ "feed_grid_from_battery_when_pv_off",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	14,	14,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* G */
+	{ "battery.charge.en",				ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	2,	2,	"%s",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* A */
+	{ "battery.charge.from_ac.en",			ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	4,	4,	"%s",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* B */
+	{ "pv.feed_grid.en",				ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	6,	6,	"%s",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* C */
+	{ "battery.discharge.when_pv_on.en",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	8,	8,	"%s",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* D */
+	{ "battery.discharge.when_pv_off.en",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	10,	10,	"%s",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* E */
+	{ "battery.feed_grid.when_pv_on.en",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	12,	12,	"%s",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* F */
+	{ "battery.feed_grid.when_pv_off.en",		ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	16,	'(',	"",	14,	14,	"%s",			QX_FLAG_ENUM | QX_FLAG_SEMI_STATIC,				NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	/* G */
 /*	{ "unknown.?",					ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	18,	'(',	"",	16,	16,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	*//* H */
 /*	{ "unknown.?",					ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	20,	'(',	"",	18,	18,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	*//* I */
 /*	{ "unknown.?",					ST_FLAG_RW,			voltronic_sunny_e_cap_nonut,		"QENF\r",			"",	22,	'(',	"",	20,	20,	"%s",			QX_FLAG_ENUM | QX_FLAG_NONUT | QX_FLAG_SEMI_STATIC,		NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01 },	*//* J */
 
 	/*   Enable (<action>: 1) or disable (<action>: 0) operational option <option> (P16 only)
+	 *   TODO QX_FLAG_NONUT are bailing out QX_FLAG_SETVARs, maybe during driver init due to !testvar(item->info_type)==true @nutdrv_qx::setvar(..) line 1207-1209; With the consequence that they are not displayed as upsrw for the client
 	 * > [ENF<option><action>\r]
 	 * < [(ACK\r]
 	 *    01234
 	 *    0
 	 */
 
-	{ "charge_battery",				0,				voltronic_sunny_e_cap_nonut,		"ENFA%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* A */
-	{ "charge_battery_from_ac",			0,				voltronic_sunny_e_cap_nonut,		"ENFB%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* B */
-	{ "feed_grid",					0,				voltronic_sunny_e_cap_nonut,		"ENFC%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* C */
-	{ "discharge_battery_when_pv_on",		0,				voltronic_sunny_e_cap_nonut,		"ENFD%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* D */
-	{ "discharge_battery_when_pv_off",		0,				voltronic_sunny_e_cap_nonut,		"ENFE%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* E */
-	{ "feed_grid_from_battery_when_pv_on",		0,				voltronic_sunny_e_cap_nonut,		"ENFF%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* F */
-	{ "feed_grid_from_battery_when_pv_off",		0,				voltronic_sunny_e_cap_nonut,		"ENFG%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* G */
+	{ "battery.charge.en",				0,				voltronic_sunny_e_cap_nonut,		"ENFA%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_ENUM | QX_FLAG_SKIP,			NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* A */
+	{ "battery.charge.from_ac.en",			0,				voltronic_sunny_e_cap_nonut,		"ENFB%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_ENUM | QX_FLAG_SKIP,			NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* B */
+	{ "pv.feed_grid.en",				0,				voltronic_sunny_e_cap_nonut,		"ENFC%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_ENUM | QX_FLAG_SKIP,			NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* C */
+	{ "battery.discharge.when_pv_on.en",		0,				voltronic_sunny_e_cap_nonut,		"ENFD%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_ENUM | QX_FLAG_SKIP,			NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* D */
+	{ "battery.discharge.when_pv_off.en",		0,				voltronic_sunny_e_cap_nonut,		"ENFE%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_ENUM | QX_FLAG_SKIP,			NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* E */
+	{ "battery.feed_grid.when_pv_on.en",		0,				voltronic_sunny_e_cap_nonut,		"ENFF%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_ENUM | QX_FLAG_SKIP,			NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* F */
+	{ "battery.feed_grid.when_pv_off.en",		0,				voltronic_sunny_e_cap_nonut,		"ENFG%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_ENUM | QX_FLAG_SKIP,			NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	/* G */
 /*	{ "unknown.?",					0,				voltronic_sunny_e_cap_nonut,		"ENFH%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	*//* H */
 /*	{ "unknown.?",					0,				voltronic_sunny_e_cap_nonut,		"ENFI%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	*//* I */
 /*	{ "unknown.?",					0,				voltronic_sunny_e_cap_nonut,		"ENFJ%d\r",			"",	5,	'(',	"",	1,	3,	NULL,			QX_FLAG_SETVAR | QX_FLAG_NONUT | QX_FLAG_ENUM | QX_FLAG_SKIP,	NULL,				voltronic_sunny_checkcrc,		voltronic_sunny_01_set },	*//* J */
