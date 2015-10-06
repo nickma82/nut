@@ -63,6 +63,7 @@ static mib2nut_info_t *mib2nut[] = {
 	&mge,
 	&netvision,
 	&powerware,
+	&pxgx_ups,
 	&aphel_genesisII,
 	&aphel_revelation,
 	&eaton_marlin,
@@ -103,7 +104,7 @@ const char *mibvers;
 static void disable_transfer_oids(void);
 
 #define DRIVER_NAME	"Generic SNMP UPS driver"
-#define DRIVER_VERSION		"0.73"
+#define DRIVER_VERSION		"0.77"
 
 /* driver description structure */
 upsdrv_info_t	upsdrv_info = {
@@ -176,6 +177,7 @@ void upsdrv_updateinfo(void)
 	/* FIXME: only update status (SU_STATUS_*), à la usbhid-ups, in between */
 	if (time(NULL) > (lastpoll + pollfreq)) {
 
+		alarm_init();
 		status_init();
 
 		/* update all dynamic info fields */
@@ -184,6 +186,7 @@ void upsdrv_updateinfo(void)
 		else
 			dstate_datastale();
 
+		alarm_commit();
 		status_commit();
 
 		/* store timestamp */
@@ -332,8 +335,8 @@ void nut_snmp_init(const char *type, const char *hostname)
 	const char *community, *version;
 	const char *secLevel = NULL, *authPassword, *privPassword;
 	const char *authProtocol, *privProtocol;
-	int snmp_retries = SNMP_DEFAULT_RETRIES;
-	long snmp_timeout = SNMP_DEFAULT_TIMEOUT;
+	int snmp_retries = DEFAULT_NETSNMP_RETRIES;
+	long snmp_timeout = DEFAULT_NETSNMP_TIMEOUT;
 
 	upsdebugx(2, "SNMP UPS driver : entering nut_snmp_init(%s)", type);
 
@@ -355,17 +358,17 @@ void nut_snmp_init(const char *type, const char *hostname)
 	/* Net-SNMP timeout and retries */
 	if (testvar(SU_VAR_RETRIES)) {
 		snmp_retries = atoi(getval(SU_VAR_RETRIES));
-		upsdebugx(2, "Setting SNMP retries to %i", snmp_retries);
 	}
 	g_snmp_sess.retries = snmp_retries;
+	upsdebugx(2, "Setting SNMP retries to %i", snmp_retries);
 
 	if (testvar(SU_VAR_TIMEOUT)) {
 		snmp_timeout = atol(getval(SU_VAR_TIMEOUT));
-		upsdebugx(2, "Setting SNMP timeout to %ld", snmp_timeout);
 	}
 	/* We have to convert from seconds to microseconds */
 	g_snmp_sess.timeout = snmp_timeout * ONE_SEC;
-		
+	upsdebugx(2, "Setting SNMP timeout to %ld second(s)", snmp_timeout);
+
 	/* Retrieve user parameters */
 	version = testvar(SU_VAR_VERSION) ? getval(SU_VAR_VERSION) : "v1";
 	
@@ -571,8 +574,8 @@ struct snmp_pdu **nut_snmp_walk(const char *OID, int max_iteration)
 
 			if ((numerr == SU_ERR_LIMIT) || ((numerr % SU_ERR_RATE) == 0)) {
 				upslogx(LOG_WARNING, "[%s] Warning: excessive poll "
-						"failures, limiting error reporting",
-						upsname?upsname:device_name);
+						"failures, limiting error reporting (OID = %s)",
+						upsname?upsname:device_name, OID);
 			}
 
 			if ((numerr < SU_ERR_LIMIT) || ((numerr % SU_ERR_RATE) == 0)) {
@@ -875,7 +878,9 @@ void su_setinfo(snmp_info_t *su_info_p, const char *value)
 	if (SU_TYPE(su_info_p) == SU_TYPE_CMD)
 		return;
 
-	if (strcasecmp(su_info_p->info_type, "ups.status"))
+	/* ups.status and ups.alarm have special handling, not here! */
+	if ((strcasecmp(su_info_p->info_type, "ups.status"))
+		&& (strcasecmp(su_info_p->info_type, "ups.alarm")))
 	{
 		if (value != NULL)
 			dstate_setinfo(su_info_p->info_type, "%s", value);
@@ -901,6 +906,21 @@ void su_status_set(snmp_info_t *su_info_p, long value)
 	{
 		if (strcmp(info_value, "")) {
 			status_set(info_value);
+		}
+	}
+	/* TODO: else */
+}
+
+void su_alarm_set(snmp_info_t *su_info_p, long value)
+{
+	const char *info_value = NULL;
+
+	upsdebugx(2, "SNMP UPS driver : entering su_alarm_set()");
+
+	if ((info_value = su_find_infoval(su_info_p->oid2info, value)) != NULL)
+	{
+		if (strcmp(info_value, "")) {
+			alarm_set(info_value);
 		}
 	}
 	/* TODO: else */
@@ -1476,6 +1496,22 @@ bool_t su_ups_get(snmp_info_t *su_info_p)
 		return status;
 	}
 
+	if (!strcasecmp(su_info_p->info_type, "ups.alarm")) {
+
+		status = nut_snmp_get_int(su_info_p->OID, &value);
+		if (status == TRUE)
+		{
+			su_alarm_set(su_info_p, value);
+			upsdebugx(2, "=> value: %ld", value);
+		}
+		else upsdebugx(2, "=> Failed");
+
+		return status;
+	}
+
+	/* FIXME: this is not compliant nor coherent with ups.alarm and
+	 * MUST be reworked!
+	 * Only present in powerware-mib.c */
 	if (!strcasecmp(su_info_p->info_type, "ups.alarms")) {
 		status = nut_snmp_get_int(su_info_p->OID, &value);
 		if (status == TRUE) {
@@ -1546,7 +1582,9 @@ bool_t su_ups_get(snmp_info_t *su_info_p)
 		return TRUE;
 	}
 
-	if (su_info_p->info_flags == 0) {
+	if (su_info_p->info_flags & ST_FLAG_STRING) {
+		status = nut_snmp_get_str(su_info_p->OID, buf, sizeof(buf), su_info_p->oid2info);
+	} else {
 		status = nut_snmp_get_int(su_info_p->OID, &value);
 		if (status == TRUE) {
 			if (su_info_p->flags&SU_FLAG_NEGINVALID && value<0) {
@@ -1563,8 +1601,6 @@ bool_t su_ups_get(snmp_info_t *su_info_p)
 			}
 			snprintf(buf, sizeof(buf), "%.2f", value * su_info_p->info_len);
 		}
-	} else {
-		status = nut_snmp_get_str(su_info_p->OID, buf, sizeof(buf), su_info_p->oid2info);
 	}
 
 	if (status == TRUE) {
@@ -1665,7 +1701,8 @@ int su_setvar(const char *varname, const char *val)
 			value = su_find_valinfo(su_info_p->oid2info, val);
 		}
 		else {
-			value = strtol(val, NULL, 0);
+			/* Convert value and apply multiplier */
+			value = strtof(val, NULL) / su_info_p->info_len;
 		}
 		/* Actually apply the new value */
 		status = nut_snmp_set_int(su_info_p->OID, value);
